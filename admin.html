@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — Qutbi Tours &amp; Holidays</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="brand">
+      <div class="brand-logo">QT</div>
+      <div>
+        <div class="brand-name">Qutbi Tours &amp; Holidays</div>
+        <div class="brand-sub">Admin Dashboard</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a href="index.html">+ New Booking</a>
+      <a href="#" id="logoutLink" style="display:none">Logout</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Login gate -->
+    <section id="loginGate" class="login-wrap">
+      <h2>Admin Login</h2>
+      <p>Enter the admin password to view bookings.</p>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" autocomplete="current-password">
+        <div class="error" id="loginErr" style="display:none">Wrong password.</div>
+      </div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn btn-primary btn-lg" id="btnLogin">Login</button>
+      </div>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashboard" style="display:none">
+
+      <!-- Stats -->
+      <div class="stats" style="margin-bottom:14px">
+        <div class="stat"><div class="lbl">Total bookings</div><div class="val" id="s-total">0</div><div class="sub" id="s-total-sub">All-time confirmed + cancelled</div></div>
+        <div class="stat"><div class="lbl">Today's bookings</div><div class="val" id="s-today">0</div><div class="sub">Booked today</div></div>
+        <div class="stat"><div class="lbl">Upcoming trips</div><div class="val" id="s-upcoming">0</div><div class="sub">Travel date ≥ today</div></div>
+        <div class="stat"><div class="lbl">Booked seats (upcoming)</div><div class="val" id="s-booked-seats">0</div><div class="sub" id="s-avail-seats">Available: —</div></div>
+        <div class="stat"><div class="lbl">Total amount</div><div class="val" id="s-amount">₹0</div><div class="sub">Confirmed bookings</div></div>
+        <div class="stat"><div class="lbl">Amount received</div><div class="val" id="s-received">₹0</div><div class="sub">Paid so far</div></div>
+        <div class="stat"><div class="lbl">Remaining payment</div><div class="val" id="s-remaining">₹0</div><div class="sub">Outstanding</div></div>
+        <div class="stat"><div class="lbl">Cancelled</div><div class="val" id="s-cancelled">0</div><div class="sub">Not deleted, status only</div></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="card">
+        <h2 style="margin-bottom:10px">All Bookings</h2>
+        <div class="filters">
+          <input type="text" id="fName" placeholder="Passenger name…">
+          <input type="text" id="fMobile" placeholder="Mobile number…">
+          <input type="text" id="fId" placeholder="Booking ID…">
+          <input type="date" id="fDate" title="Travel date">
+          <select id="fRoute">
+            <option value="">All routes</option>
+            <option value="NASHIK_SURAT">Nashik to Surat</option>
+            <option value="INDORE_SURAT">Indore to Surat</option>
+            <option value="SURAT_NASHIK">Surat to Nashik</option>
+            <option value="SURAT_INDORE">Surat to Indore</option>
+          </select>
+          <input type="text" id="fSeat" placeholder="Seat number…">
+          <select id="fSleeper">
+            <option value="">All sleeper types</option>
+            <option>Lower</option><option>Upper</option>
+          </select>
+          <select id="fPay">
+            <option value="">All payment status</option>
+            <option>Fully Paid</option><option>Partially Paid</option><option>Unpaid</option>
+          </select>
+          <select id="fStatus">
+            <option value="">All booking status</option>
+            <option>Confirmed</option><option>Cancelled</option>
+          </select>
+        </div>
+        <div class="btn-row" style="margin:0 0 12px">
+          <button class="btn btn-ghost" id="btnClear">Clear filters</button>
+          <button class="btn btn-outline" id="btnRefresh">↻ Refresh</button>
+          <button class="btn btn-outline" id="btnExport">⬇️ Export CSV</button>
+          <a class="btn btn-gold" href="index.html">+ Add new booking</a>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data" id="tbl">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Passenger</th>
+                <th>Mobile</th>
+                <th>Route</th>
+                <th>Travel</th>
+                <th>Seat</th>
+                <th>Type</th>
+                <th>Total</th>
+                <th>Paid</th>
+                <th>Bal.</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr><td colspan="13" style="text-align:center;color:#6b7280;padding:26px">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="rowCount" style="margin-top:10px;color:#6b7280;font-size:13px"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Booking detail / edit modal -->
+  <div class="modal" id="editModal">
+    <div class="dlg">
+      <button class="close" id="editClose">×</button>
+      <h3 id="editTitle">Edit booking</h3>
+      <div id="editBody"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

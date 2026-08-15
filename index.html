@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Qutbi Tours &amp; Holidays — Sleeper Bus Booking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="brand">
+      <div class="brand-logo">QT</div>
+      <div>
+        <div class="brand-name">Qutbi Tours &amp; Holidays</div>
+        <div class="brand-sub">Sleeper Bus Booking</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a href="admin.html">Admin</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <div class="stepper no-print">
+      <div class="step active" data-step="1"><div class="num">1</div>Trip Details</div>
+      <div class="step" data-step="2"><div class="num">2</div>Select Seats</div>
+      <div class="step" data-step="3"><div class="num">3</div>Review</div>
+      <div class="step" data-step="4"><div class="num">4</div>Confirm</div>
+    </div>
+
+    <!-- STEP 1: Trip details -->
+    <section class="card" id="section-1">
+      <h2>Trip details</h2>
+      <div class="subtitle">Choose the route and enter the common booking details.</div>
+
+      <div class="form-grid">
+        <div class="field" id="f-route">
+          <label>Route<span class="req">*</span></label>
+          <select id="route">
+            <option value="">Select route</option>
+            <option value="NASHIK_SURAT">Nashik to Surat</option>
+            <option value="INDORE_SURAT">Indore to Surat</option>
+            <option value="SURAT_NASHIK">Surat to Nashik</option>
+            <option value="SURAT_INDORE">Surat to Indore</option>
+          </select>
+          <div class="error">Choose a route.</div>
+        </div>
+        <div class="field" id="f-nagar" style="display:none">
+          <label>Boarding Nagar<span class="req">*</span></label>
+          <select id="boardingNagar">
+            <option value="">Select Nagar</option>
+            <option>Ammar Nagar</option>
+            <option>Nurai Nagar</option>
+            <option>Saify Nagar</option>
+          </select>
+          <div class="error">Choose the boarding Nagar.</div>
+        </div>
+        <div class="field" id="f-mobile">
+          <label>Mobile number<span class="req">*</span></label>
+          <input type="tel" id="mobile" placeholder="10-digit mobile" inputmode="numeric" maxlength="10">
+          <div class="hint">Indian mobile — must start with 6, 7, 8 or 9.</div>
+          <div class="error">Enter a valid 10-digit mobile.</div>
+        </div>
+        <div class="field" id="f-date">
+          <label>Travel date<span class="req">*</span></label>
+          <input type="date" id="travelDate">
+          <div class="error">Choose a valid travel date.</div>
+        </div>
+        <div class="field" id="f-total">
+          <label>Total ticket amount<span class="req">*</span></label>
+          <input type="number" id="totalAmount" min="0" step="1" placeholder="e.g., 1200">
+          <div class="error">Enter total amount.</div>
+        </div>
+        <div class="field" id="f-paid">
+          <label>Amount paid<span class="req">*</span></label>
+          <input type="number" id="amountPaid" min="0" step="1" placeholder="e.g., 500">
+          <div class="error">Amount paid cannot exceed total.</div>
+        </div>
+        <div class="field">
+          <label>Remaining amount</label>
+          <input type="text" id="remainingAmount" readonly>
+        </div>
+        <div class="field" id="f-method">
+          <label>Payment method<span class="req">*</span></label>
+          <select id="paymentMethod">
+            <option value="">Select method</option>
+            <option>Cash</option><option>UPI</option>
+            <option>Bank Transfer</option><option>Other</option>
+          </select>
+          <div class="error">Choose a payment method.</div>
+        </div>
+        <div class="field">
+          <label>Payment status</label>
+          <input type="text" id="paymentStatus" readonly>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>Booking notes</label>
+          <textarea id="notes" rows="2" placeholder="Optional"></textarea>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary btn-lg" id="btn-to-step-2">Continue to seat selection →</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: Seat select -->
+    <section class="card" id="section-2" style="display:none">
+      <h2>Select sleeper seats</h2>
+      <div class="subtitle">Select one or more available seats for <span id="seatDateLabel">—</span>. Then enter one passenger name for every selected seat.</div>
+
+      <div class="deck-switch">
+        <button class="btn btn-outline" id="btn-lower" data-deck="Lower">Lower Sleeper</button>
+        <button class="btn btn-outline" id="btn-upper" data-deck="Upper">Upper Sleeper</button>
+      </div>
+
+      <div class="legend">
+        <span class="chip"><span class="dot avail"></span>Available</span>
+        <span class="chip"><span class="dot selected"></span>Selected</span>
+        <span class="chip"><span class="dot booked"></span>Booked</span>
+        <span class="chip"><span class="dot temp"></span>Unavailable</span>
+      </div>
+
+      <div class="bus-frame">
+        <div class="bus-grid" id="busGrid">
+          <div style="grid-column:1/-1;text-align:center;color:#6b7280;padding:20px">
+            Choose <b>Lower Sleeper</b> or <b>Upper Sleeper</b> to view seats.
+          </div>
+        </div>
+      </div>
+
+      <div id="seatSummary" style="display:none;margin-top:14px" class="summary">
+        <div class="row"><span class="k">Selected seats</span><span class="v" id="ss-seat"></span></div>
+        <div class="row"><span class="k">Seat count</span><span class="v" id="ss-count"></span></div>
+        <div class="row"><span class="k">Travel date</span><span class="v" id="ss-date"></span></div>
+      </div>
+
+      <div id="passengerNamesCard" class="passenger-card" style="display:none">
+        <h3>Passenger names</h3>
+        <div class="hint">Enter the passenger travelling on each selected seat.</div>
+        <div id="passengerNameFields" class="passenger-name-grid"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btn-back-1">← Back</button>
+        <button class="btn btn-primary btn-lg" id="btn-to-step-3" disabled>Review booking →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3: Review -->
+    <section class="card" id="section-3" style="display:none">
+      <h2>Review booking</h2>
+      <div class="subtitle">Double-check every detail before confirming.</div>
+
+      <div class="summary" id="reviewPanel"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btn-edit">← Edit details</button>
+        <button class="btn btn-gold btn-lg" id="btn-confirm">Confirm booking ✓</button>
+      </div>
+    </section>
+
+    <!-- STEP 4: Success -->
+    <section class="card" id="section-4" style="display:none">
+      <div class="success">
+        <div class="check">✓</div>
+        <h2>Booking Confirmed Successfully!</h2>
+        <p>Your booking has been saved.</p>
+      </div>
+
+      <div style="margin-top:18px" id="confirmPanel"></div>
+
+      <div class="btn-row no-print">
+        <button class="btn btn-primary" id="btn-print">🖨️ Print Booking</button>
+        <button class="btn btn-outline" id="btn-download">⬇️ Download Ticket</button>
+        <button class="btn btn-gold" id="btn-new">+ Make New Booking</button>
+        <a class="btn btn-outline" href="admin.html">View All Bookings</a>
+        <a class="btn btn-outline" id="btn-whatsapp" target="_blank" rel="noopener">💬 Share on WhatsApp</a>
+      </div>
+    </section>
+
+    <div class="footer-note no-print">© <span id="year"></span> Qutbi Tours &amp; Holidays</div>
+  </main>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/booking.js"></script>
+</body>
+</html>
