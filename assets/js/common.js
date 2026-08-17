@@ -105,6 +105,7 @@
       'SEAT_TAKEN':'This seat was just taken by someone else. Please pick another.',
       'BAD_ROUTE':'Choose a valid route.',
       'BAD_ROUTE_POINTS':'The boarding or dropping point does not match the selected route.',
+      'BAD_VEHICLE':'Choose a valid vehicle or transport type.',
       'BAD_BOARDING':'Choose Ammar Nagar, Nurai Nagar, or Sefi Nagar.',
       'DUPLICATE_SEAT':'The same seat was selected more than once.',
       'BAD_MOBILE':'Enter a valid 10-digit Indian mobile number.',
@@ -142,6 +143,7 @@
       'Passengers / Seats:\n' + passengerLines,
       (b.boardingPoint ? ('Boarding: ' + b.boardingPoint) : ''),
       (b.droppingPoint ? ('Dropping: ' + b.droppingPoint) : ''),
+      (b.vehicleType ? ('Vehicle: ' + b.vehicleType) : ''),
       'Total: ' + fmtMoney(b.totalAmount),
       'Paid: ' + fmtMoney(b.amountPaid),
       'Balance: ' + fmtMoney(b.remainingAmount),
@@ -154,25 +156,27 @@
       ? b.passengers.map(p => '<div>' + safe_(p.seatNumber) + ' — ' + safe_(p.passengerName) + ' (' + safe_(p.sleeperType) + ')</div>').join('')
       : safe_(b.passengerName || '') + ' — ' + safe_(b.seatNumber || '');
     return `
-      <div class="ticket">
+      <div class="ticket ticket-premium">
         <div class="ticket-header">
-          <h3>Qutbi Tours &amp; Holidays</h3>
-          <div class="id">${b.bookingId||''}</div>
+          <div><div class="ticket-eyebrow">OFFICIAL TRAVEL TICKET</div><h3>Qutbi Tours &amp; Holidays</h3><div class="ticket-tagline">Comfortable journeys. Trusted service.</div></div>
+          <div class="ticket-id-wrap"><span>BOOKING ID</span><div class="id">${b.bookingId||''}</div></div>
         </div>
+        <div class="ticket-route"><span>${safe_(b.boardingPoint||'—')}</span><b>→</b><span>${safe_(b.droppingPoint||'—')}</span></div>
         <div class="ticket-grid">
           ${b.routeLabel ? `<div><div class="k">Route</div><div class="v">${safe_(b.routeLabel)}</div></div>` : ''}
           <div><div class="k">Mobile</div><div class="v">${b.mobile||''}</div></div>
           <div><div class="k">Travel Date</div><div class="v">${fmtDate(b.travelDate)}</div></div>
+          ${b.vehicleType ? `<div><div class="k">Vehicle / Transport</div><div class="v">${safe_(b.vehicleType)}</div></div>` : ''}
           <div style="grid-column:1/-1"><div class="k">Passengers / Seats</div><div class="v">${passengerHTML}</div></div>
           <div><div class="k">Boarding</div><div class="v">${b.boardingPoint||'—'}</div></div>
           <div><div class="k">Dropping</div><div class="v">${b.droppingPoint||'—'}</div></div>
-          <div><div class="k">Total</div><div class="v">${fmtMoney(b.totalAmount)}</div></div>
-          <div><div class="k">Paid</div><div class="v">${fmtMoney(b.amountPaid)}</div></div>
-          <div><div class="k">Balance</div><div class="v">${fmtMoney(b.remainingAmount)}</div></div>
+          <div class="ticket-money"><div class="k">Total Fare</div><div class="v">${fmtMoney(b.totalAmount)}</div></div>
+          <div class="ticket-money paid"><div class="k">Amount Paid</div><div class="v">${fmtMoney(b.amountPaid)}</div></div>
+          <div class="ticket-money balance"><div class="k">Balance Due</div><div class="v">${fmtMoney(b.remainingAmount)}</div></div>
           <div><div class="k">Payment</div><div class="v">${b.paymentMethod||''} — ${b.paymentStatus||paymentStatusFor(b.totalAmount,b.amountPaid)}</div></div>
         </div>
         <p style="margin-top:14px;font-size:12px;color:#6b7280;text-align:center">
-          Please carry a valid ID. Report at boarding point 15 minutes early. Safe travels!
+          Please carry a valid ID and report 15 minutes before departure. Thank you for choosing Qutbi Tours!
         </p>
       </div>`;
   }
@@ -195,13 +199,14 @@
     const html = `<!doctype html><html><head><meta charset="utf-8"><title>Ticket ${b.bookingId}</title>
       <style>
       body{font-family:Arial,sans-serif;padding:20px;color:#1a2233}
-      .ticket{border:2px solid #0B2545;border-radius:14px;padding:18px;max-width:600px;margin:auto}
-      .hd{display:flex;justify-content:space-between;border-bottom:2px dashed #0B2545;padding-bottom:8px;margin-bottom:10px}
-      .hd h3{margin:0;color:#0B2545}
-      .id{background:#0B2545;color:#fff;padding:4px 10px;border-radius:6px;font-size:12px}
-      .g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-      .k{color:#6b7280;font-size:12px}
-      .v{font-weight:600;margin-bottom:6px}
+      .ticket{border:1px solid #D4A93A;border-radius:18px;max-width:650px;margin:auto;overflow:hidden;box-shadow:0 12px 30px #0b254522}
+      .hd{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#071c36,#153d73);color:#fff;padding:22px}
+      .hd h3{margin:0;color:#fff;font-size:22px}
+      .id{background:#F1C555;color:#0B2545;padding:7px 11px;border-radius:7px;font-size:12px;font-weight:700}
+      .g{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:20px}
+      .g>div{background:#f8fafc;border:1px solid #eef2f7;border-radius:9px;padding:9px 11px}
+      .k{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.6px}
+      .v{color:#0B2545;font-weight:700;margin-top:4px}
       </style></head><body>
       <div class="ticket">
         <div class="hd"><h3>Qutbi Tours & Holidays</h3><div class="id">${b.bookingId}</div></div>
@@ -209,6 +214,7 @@
           ${b.routeLabel ? `<div><div class="k">Route</div><div class="v">${safe_(b.routeLabel)}</div></div>` : ''}
           <div><div class="k">Mobile</div><div class="v">${b.mobile||''}</div></div>
           <div><div class="k">Travel Date</div><div class="v">${fmtDate(b.travelDate)}</div></div>
+          ${b.vehicleType ? `<div><div class="k">Vehicle / Transport</div><div class="v">${safe_(b.vehicleType)}</div></div>` : ''}
           <div style="grid-column:1/-1"><div class="k">Passengers / Seats</div><div class="v">${passengerHTML}</div></div>
           <div><div class="k">Boarding</div><div class="v">${b.boardingPoint||'-'}</div></div>
           <div><div class="k">Dropping</div><div class="v">${b.droppingPoint||'-'}</div></div>

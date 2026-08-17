@@ -86,6 +86,7 @@
       setInvalid('f-nagar', ['Ammar Nagar','Nurai Nagar','Sefi Nagar'].includes($('boardingNagar').value));
     }
     setInvalid('f-mobile', QT.validMobile($('mobile').value));
+    setInvalid('f-vehicle', $('vehicleType').value !== '');
     setInvalid('f-date', QT.isFutureOrToday($('travelDate').value));
     const total = Number($('totalAmount').value);
     const paid = Number($('amountPaid').value);
@@ -221,11 +222,11 @@
       seatNumber: s.id,
       sleeperType: s.deck
     }));
-    const firstPassenger = passengers[0] || {};
     return {
       route: route,
       routeLabel: routeLabel(route),
       mobile: $('mobile').value.trim(),
+      vehicleType: $('vehicleType').value,
       travelDate: $('travelDate').value,
       boardingPoint: points.boarding,
       droppingPoint: points.dropping,
@@ -236,11 +237,6 @@
       paymentStatus: QT.paymentStatusFor(total, paid),
       notes: $('notes').value.trim(),
       passengers: passengers,
-      // Keep the legacy single-seat fields so older deployed Apps Script
-      // versions do not reject an otherwise valid booking with BAD_NAME.
-      passengerName: firstPassenger.passengerName || '',
-      seatNumber: firstPassenger.seatNumber || '',
-      sleeperType: firstPassenger.sleeperType || '',
       bookedBy: 'Staff'
     };
   }
@@ -260,6 +256,7 @@
       ['Boarding point', escapeHTML(b.boardingPoint)],
       ['Dropping point', escapeHTML(b.droppingPoint)],
       ['Mobile number', escapeHTML(b.mobile)],
+      ['Vehicle / transport', escapeHTML(b.vehicleType)],
       ['Travel date', QT.fmtDate(b.travelDate)],
       ['Passengers / seats', passengerHtml],
       ['Total ticket amount', QT.fmtMoney(b.totalAmount)],
@@ -321,6 +318,7 @@
       ['Group booking ID', `<b>${escapeHTML(b.bookingId)}</b>`],
       ['Route', escapeHTML(b.routeLabel)],
       ['Boarding', escapeHTML(b.boardingPoint)],
+      ['Vehicle / transport', escapeHTML(b.vehicleType)],
       ['Passengers / seats', passengerHtml],
       ['Travel date', QT.fmtDate(b.travelDate)],
       ['Total ticket amount', QT.fmtMoney(b.totalAmount)],
@@ -359,6 +357,7 @@
     $('route').value = '';
     $('boardingNagar').value = '';
     $('paymentMethod').value = '';
+    $('vehicleType').value = '';
     $('travelDate').value = QT.todayISO();
     state.deck = null;
     state.submitted = false;

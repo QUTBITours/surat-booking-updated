@@ -134,6 +134,7 @@
         <td>${QT.fmtDate(r.travelDate)}</td>
         <td>${escapeHTML(r.seatNumber)}</td>
         <td>${escapeHTML(r.sleeperType)}</td>
+        <td>${escapeHTML(r.vehicleType||'—')}</td>
         <td>${QT.fmtMoney(r.totalAmount)}</td>
         <td>${QT.fmtMoney(r.amountPaid)}</td>
         <td>${QT.fmtMoney(r.remainingAmount)}</td>
@@ -210,6 +211,11 @@
         <div class="field"><label>Sleeper type</label>
           <select id="e-type"><option${r.sleeperType==='Lower'?' selected':''}>Lower</option><option${r.sleeperType==='Upper'?' selected':''}>Upper</option></select>
         </div>
+        <div class="field"><label>Vehicle / transport</label>
+          <select id="e-vehicle">
+            ${['4-seater Sedan Car','6-seater Innova','RTA','7-seater Innova','10-seater Tempo Traveller','15-seater','20-seater','25-seater','50-seater'].map(v=>`<option${r.vehicleType===v?' selected':''}>${v}</option>`).join('')}
+          </select>
+        </div>
         <div class="field"><label>Boarding</label><input id="e-board" value="${escapeAttr(r.boardingPoint)}"></div>
         <div class="field"><label>Dropping</label><input id="e-drop" value="${escapeAttr(r.droppingPoint)}"></div>
         <div class="field"><label>Total amount</label><input type="number" id="e-total" value="${r.totalAmount}"></div>
@@ -253,6 +259,7 @@
       travelDate:    $('e-date').value,
       seatNumber:    $('e-seat').value.trim(),
       sleeperType:   $('e-type').value,
+      vehicleType:   $('e-vehicle').value,
       boardingPoint: $('e-board').value.trim(),
       droppingPoint: $('e-drop').value.trim(),
       totalAmount:   Number($('e-total').value||0),
@@ -307,12 +314,12 @@
   function exportCSV(){
     if (!state.filtered.length){ QT.toast('Nothing to export','warn'); return; }
     const headers = ['Timestamp','Booking ID','Passenger Name','Mobile','Route','Travel Date','Seat','Sleeper Type',
-      'Boarding','Dropping','Total','Paid','Remaining','Payment Method','Payment Status','Booking Status','Notes','Booked By'];
+      'Boarding','Dropping','Vehicle Type','Total','Paid','Remaining','Payment Method','Payment Status','Booking Status','Notes','Booked By'];
     const csv = [headers.join(',')];
     state.filtered.forEach(r=>{
       csv.push([
         r.timestamp, r.bookingId, r.passengerName, r.mobile, r.routeLabel, r.travelDate, r.seatNumber, r.sleeperType,
-        r.boardingPoint, r.droppingPoint, r.totalAmount, r.amountPaid, r.remainingAmount,
+        r.boardingPoint, r.droppingPoint, r.vehicleType, r.totalAmount, r.amountPaid, r.remainingAmount,
         r.paymentMethod, r.paymentStatus, r.bookingStatus, r.notes, r.bookedBy
       ].map(csvCell).join(','));
     });
