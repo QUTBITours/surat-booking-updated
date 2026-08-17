@@ -21,7 +21,7 @@ const HEADERS = [
   'Timestamp','Booking ID','Passenger Name','Mobile Number','Travel Date',
   'Seat Number','Sleeper Type','Boarding Point','Dropping Point',
   'Total Ticket Amount','Amount Paid','Remaining Amount',
-  'Payment Method','Payment Status','Booking Status','Notes','Booked By'
+  'Payment Method','Payment Status','Booking Status','Notes','Booked By','Vehicle Type'
 ];
 
 function doGet(e)  { return handle_(e); }
@@ -64,9 +64,9 @@ function spreadsheet_() { return SpreadsheetApp.openById(SHEET_ID); }
 
 function ensureHeaders_(sh) {
   if (sh.getLastRow() === 0) {
-    sh.getRange(1,1,1,HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
     sh.setFrozenRows(1);
   }
+  sh.getRange(1,1,1,HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
   return sh;
 }
 
@@ -140,7 +140,8 @@ function rowToObj_(row, rowNumber, sheetName, route) {
     paymentStatus:   String(row[13] || ''),
     bookingStatus:   String(row[14] || ''),
     notes:           String(row[15] || ''),
-    bookedBy:        String(row[16] || '')
+    bookedBy:        String(row[16] || ''),
+    vehicleType:     String(row[17] || '')
   };
 }
 
@@ -220,7 +221,7 @@ function createBooking_(p) {
         pax.seatNumber, pax.sleeperType,
         b.boardingPoint, b.droppingPoint,
         total, paid, remaining, b.paymentMethod, derivePaymentStatus_(total, paid),
-        'Confirmed', b.notes || '', b.bookedBy || 'Staff'
+        'Confirmed', b.notes || '', b.bookedBy || 'Staff', b.vehicleType
       ];
     });
 
@@ -272,7 +273,7 @@ function updateBooking_(p) {
     sh.getRange(target._row,1,1,HEADERS.length).setValues([[
       new Date(target.timestamp || Date.now()), merged.bookingId, merged.passengerName, String(merged.mobile),
       merged.travelDate, merged.seatNumber, merged.sleeperType, merged.boardingPoint || '', merged.droppingPoint || '',
-      total, paid, remain, merged.paymentMethod, payStat, merged.bookingStatus || 'Confirmed', merged.notes || '', merged.bookedBy || ''
+      total, paid, remain, merged.paymentMethod, payStat, merged.bookingStatus || 'Confirmed', merged.notes || '', merged.bookedBy || '', merged.vehicleType || ''
     ]]);
     return { ok:true };
   } finally {
@@ -318,6 +319,7 @@ function validateGroupBooking_(b) {
   if (!/^[6-9]\d{9}$/.test(String(b.mobile || ''))) return 'BAD_MOBILE';
   if (!b.travelDate) return 'BAD_DATE';
   if (!Array.isArray(b.passengers) || b.passengers.length < 1) return 'BAD_SEAT';
+  if (['4-seater Sedan Car','6-seater Innova','RTA','7-seater Innova','10-seater Tempo Traveller','15-seater','20-seater','25-seater','50-seater'].indexOf(String(b.vehicleType || '')) < 0) return 'BAD_VEHICLE';
   const cfg = ROUTES[String(b.route)];
   if (String(b.route) === 'INDORE_SURAT') {
     if (INDORE_NAGARS.indexOf(String(b.boardingPoint || '')) < 0) return 'BAD_BOARDING';
