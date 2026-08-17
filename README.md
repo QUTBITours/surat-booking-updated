@@ -24,6 +24,11 @@ A seat is booked for a specific **route + travel date**. One booking may contain
 
 Every booking also records a required **vehicle / transport type** and the amount paid. Multi-passenger bookings are saved as one Sheet row per passenger, all linked by the same group booking ID.
 
+Booking flow by vehicle:
+- 4, 6, 7, 10, 15, 20 and 25 seat vehicles ask for passenger count and then show exactly that many passenger-name fields.
+- RTA uses the passenger-count flow with a maximum of 50 passengers.
+- The 50-seater uses an interactive 50-seat map; each selected seat is assigned to one named passenger and printed on the ticket.
+
 Routes:
 - **Nashik to Surat**
 - **Indore to Surat** — boarding Nagar must be Ammar Nagar, Nurai Nagar, or Saify Nagar.

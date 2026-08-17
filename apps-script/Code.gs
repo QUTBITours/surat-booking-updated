@@ -16,6 +16,17 @@ const ROUTES = {
   SURAT_INDORE: { label:'Surat to Indore', sheet:'Surat to Indore', code:'SI', from:'Surat', to:'Indore' }
 };
 const INDORE_NAGARS = ['Ammar Nagar','Nurai Nagar','Sefi Nagar'];
+const VEHICLES = {
+  '4-seater Sedan Car': { capacity:4, seatMap:false },
+  '6-seater Innova': { capacity:6, seatMap:false },
+  'RTA': { capacity:50, seatMap:false },
+  '7-seater Innova': { capacity:7, seatMap:false },
+  '10-seater Tempo Traveller': { capacity:10, seatMap:false },
+  '15-seater': { capacity:15, seatMap:false },
+  '20-seater': { capacity:20, seatMap:false },
+  '25-seater': { capacity:25, seatMap:false },
+  '50-seater': { capacity:50, seatMap:true }
+};
 
 const HEADERS = [
   'Timestamp','Booking ID','Passenger Name','Mobile Number','Travel Date',
@@ -180,14 +191,18 @@ function listBookings_(p) {
 function seatStatus_(p) {
   const route = String(p.route || '');
   const travelDate = normalizeDate_(p.travelDate);
+  const vehicleType = String(p.vehicleType || '');
   if (!ROUTES[route]) return { ok:false, error:'BAD_ROUTE' };
+  if (!VEHICLES[vehicleType]) return { ok:false, error:'BAD_VEHICLE' };
   if (!travelDate) return { ok:false, error:'MISSING_DATE' };
-  const rows = readAll_(route).filter(r => r.travelDate === travelDate && r.bookingStatus !== 'Cancelled');
+  const rows = VEHICLES[vehicleType].seatMap
+    ? readAll_(route).filter(r => r.travelDate === travelDate && r.vehicleType === vehicleType && r.bookingStatus !== 'Cancelled')
+    : [];
   const map = {};
   rows.forEach(r => {
     map[r.seatNumber] = { passengerName:r.passengerName, bookingId:r.bookingId, sleeperType:r.sleeperType };
   });
-  return { ok:true, route:route, travelDate:travelDate, booked:map };
+  return { ok:true, route:route, travelDate:travelDate, vehicleType:vehicleType, booked:map };
 }
 
 function createBooking_(p) {
@@ -200,8 +215,9 @@ function createBooking_(p) {
   try {
     const route = String(b.route);
     const travelDate = normalizeDate_(b.travelDate);
-    const existing = readAll_(route).filter(r => r.travelDate === travelDate && r.bookingStatus !== 'Cancelled');
-    const taken = b.passengers.filter(pax => existing.some(r => r.seatNumber === pax.seatNumber)).map(pax => pax.seatNumber);
+    const vehicle = VEHICLES[String(b.vehicleType)];
+    const existing = readAll_(route).filter(r => r.travelDate === travelDate && r.vehicleType === String(b.vehicleType) && r.bookingStatus !== 'Cancelled');
+    const taken = vehicle.seatMap ? b.passengers.filter(pax => existing.some(r => r.seatNumber === pax.seatNumber)).map(pax => pax.seatNumber) : [];
     if (taken.length) return { ok:false, error:'SEAT_TAKEN', takenSeats:taken };
 
     const groupBookingId = generateGroupBookingId_(route, travelDate, existing);
@@ -255,9 +271,10 @@ function updateBooking_(p) {
     merged.travelDate = normalizeDate_(merged.travelDate);
 
     const routeRows = readAll_(target.route);
-    const clash = routeRows.find(r =>
+    const clash = VEHICLES[String(merged.vehicleType)] && VEHICLES[String(merged.vehicleType)].seatMap && routeRows.find(r =>
       r.bookingId !== bookingId &&
       r.travelDate === merged.travelDate &&
+      r.vehicleType === merged.vehicleType &&
       r.seatNumber === merged.seatNumber &&
       r.bookingStatus !== 'Cancelled'
     );
@@ -298,9 +315,9 @@ function restoreBooking_(p) {
   try {
     const target = readAll_().find(r => r.bookingId === bookingId);
     if (!target) return { ok:false, error:'NOT_FOUND' };
-    const clash = readAll_(target.route).find(r =>
+    const clash = VEHICLES[String(target.vehicleType)] && VEHICLES[String(target.vehicleType)].seatMap && readAll_(target.route).find(r =>
       r.bookingId !== bookingId && r.travelDate === target.travelDate &&
-      r.seatNumber === target.seatNumber && r.bookingStatus !== 'Cancelled'
+      r.vehicleType === target.vehicleType && r.seatNumber === target.seatNumber && r.bookingStatus !== 'Cancelled'
     );
     if (clash) return { ok:false, error:'SEAT_TAKEN' };
     const sh = spreadsheet_().getSheetByName(target._sheetName);
@@ -319,7 +336,9 @@ function validateGroupBooking_(b) {
   if (!/^[6-9]\d{9}$/.test(String(b.mobile || ''))) return 'BAD_MOBILE';
   if (!b.travelDate) return 'BAD_DATE';
   if (!Array.isArray(b.passengers) || b.passengers.length < 1) return 'BAD_SEAT';
-  if (['4-seater Sedan Car','6-seater Innova','RTA','7-seater Innova','10-seater Tempo Traveller','15-seater','20-seater','25-seater','50-seater'].indexOf(String(b.vehicleType || '')) < 0) return 'BAD_VEHICLE';
+  const vehicle = VEHICLES[String(b.vehicleType || '')];
+  if (!vehicle) return 'BAD_VEHICLE';
+  if (b.passengers.length > vehicle.capacity) return 'TOO_MANY_PASSENGERS';
   const cfg = ROUTES[String(b.route)];
   if (String(b.route) === 'INDORE_SURAT') {
     if (INDORE_NAGARS.indexOf(String(b.boardingPoint || '')) < 0) return 'BAD_BOARDING';
@@ -331,9 +350,13 @@ function validateGroupBooking_(b) {
   for (let i=0; i<b.passengers.length; i++) {
     const pax = b.passengers[i] || {};
     if (!pax.passengerName || String(pax.passengerName).trim().length < 2) return 'BAD_NAME';
-    if (!/^[LU](?:[1-9]|1[0-8])$/.test(String(pax.seatNumber || ''))) return 'BAD_SEAT';
-    if (pax.sleeperType !== 'Lower' && pax.sleeperType !== 'Upper') return 'BAD_TYPE';
-    if ((pax.seatNumber.charAt(0) === 'L' && pax.sleeperType !== 'Lower') || (pax.seatNumber.charAt(0) === 'U' && pax.sleeperType !== 'Upper')) return 'BAD_TYPE';
+    const seatNumber = String(pax.seatNumber || '');
+    if (vehicle.seatMap) {
+      if (!/^S(?:[1-9]|[1-4][0-9]|50)$/.test(seatNumber) || pax.sleeperType !== 'Seater') return 'BAD_SEAT';
+    } else {
+      const passengerMatch = /^P([1-9]|[1-4][0-9]|50)$/.exec(seatNumber);
+      if (!passengerMatch || Number(passengerMatch[1]) > vehicle.capacity || pax.sleeperType !== 'Passenger') return 'BAD_SEAT';
+    }
     if (seatSet[pax.seatNumber]) return 'DUPLICATE_SEAT';
     seatSet[pax.seatNumber] = true;
   }

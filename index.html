@@ -120,44 +120,55 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-primary btn-lg" id="btn-to-step-2">Continue to seat selection →</button>
+        <button class="btn btn-primary btn-lg" id="btn-to-step-2">Continue to passengers →</button>
       </div>
     </section>
 
     <!-- STEP 2: Seat select -->
     <section class="card" id="section-2" style="display:none">
-      <h2>Select sleeper seats</h2>
-      <div class="subtitle">Select one or more available seats for <span id="seatDateLabel">—</span>. Then enter one passenger name for every selected seat.</div>
+      <h2 id="seatSectionTitle">Passenger details</h2>
+      <div class="subtitle" id="seatSectionSubtitle">Choose the passenger count or select seats, then enter every passenger name.</div>
+      <span id="seatDateLabel" style="display:none">—</span>
 
-      <div class="deck-switch">
-        <button class="btn btn-outline" id="btn-lower" data-deck="Lower">Lower Sleeper</button>
-        <button class="btn btn-outline" id="btn-upper" data-deck="Upper">Upper Sleeper</button>
+      <div id="passengerCountCard" class="passenger-count-card" style="display:none">
+        <div>
+          <h3>How many passengers?</h3>
+          <p>Maximum capacity for this vehicle: <b><span id="passengerCapacity">1</span> passengers</b></p>
+        </div>
+        <div class="passenger-count-control">
+          <label for="passengerCount">Passenger count</label>
+          <input type="number" id="passengerCount" min="1" value="1">
+        </div>
       </div>
 
-      <div class="legend">
+      <div class="deck-switch" id="seatMapControls" style="display:none">
+        <div class="vehicle-map-title"><b>50-seat layout</b><span>Front of vehicle ↑</span></div>
+      </div>
+
+      <div class="legend" id="seatLegend" style="display:none">
         <span class="chip"><span class="dot avail"></span>Available</span>
         <span class="chip"><span class="dot selected"></span>Selected</span>
         <span class="chip"><span class="dot booked"></span>Booked</span>
         <span class="chip"><span class="dot temp"></span>Unavailable</span>
       </div>
 
-      <div class="bus-frame">
+      <div class="bus-frame" id="busFrame" style="display:none">
         <div class="bus-grid" id="busGrid">
           <div style="grid-column:1/-1;text-align:center;color:#6b7280;padding:20px">
-            Choose <b>Lower Sleeper</b> or <b>Upper Sleeper</b> to view seats.
+            Loading the 50-seat layout…
           </div>
         </div>
       </div>
 
       <div id="seatSummary" style="display:none;margin-top:14px" class="summary">
-        <div class="row"><span class="k">Selected seats</span><span class="v" id="ss-seat"></span></div>
+        <div class="row" id="ss-seat-row"><span class="k">Selected seats</span><span class="v" id="ss-seat"></span></div>
         <div class="row"><span class="k">Seat count</span><span class="v" id="ss-count"></span></div>
         <div class="row"><span class="k">Travel date</span><span class="v" id="ss-date"></span></div>
       </div>
 
       <div id="passengerNamesCard" class="passenger-card" style="display:none">
         <h3>Passenger names</h3>
-        <div class="hint">Enter the passenger travelling on each selected seat.</div>
+        <div class="hint" id="passengerNamesHint">Enter every passenger name.</div>
         <div id="passengerNameFields" class="passenger-name-grid"></div>
       </div>
 

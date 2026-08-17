@@ -106,6 +106,7 @@
       'BAD_ROUTE':'Choose a valid route.',
       'BAD_ROUTE_POINTS':'The boarding or dropping point does not match the selected route.',
       'BAD_VEHICLE':'Choose a valid vehicle or transport type.',
+      'TOO_MANY_PASSENGERS':'Passenger count is higher than the selected vehicle capacity.',
       'BAD_BOARDING':'Choose Ammar Nagar, Nurai Nagar, or Sefi Nagar.',
       'DUPLICATE_SEAT':'The same seat was selected more than once.',
       'BAD_MOBILE':'Enter a valid 10-digit Indian mobile number.',
@@ -133,7 +134,7 @@
   }
   function bookingWhatsappMessage(b){
     const passengerLines = Array.isArray(b.passengers)
-      ? b.passengers.map(p => p.seatNumber + ' — ' + p.passengerName).join('\n')
+      ? b.passengers.map(p => (p.seatLabel || seatLabel_(p.seatNumber)) + ' — ' + p.passengerName).join('\n')
       : ('Passenger: ' + b.passengerName + '\nSeat: ' + b.seatNumber + ' (' + b.sleeperType + ' Sleeper)');
     return [
       'Qutbi Tours & Holidays — Booking Confirmed',
@@ -153,7 +154,7 @@
 
   function ticketHTML(b){
     const passengerHTML = Array.isArray(b.passengers)
-      ? b.passengers.map(p => '<div>' + safe_(p.seatNumber) + ' — ' + safe_(p.passengerName) + ' (' + safe_(p.sleeperType) + ')</div>').join('')
+      ? b.passengers.map(p => '<div>' + safe_(p.seatLabel || seatLabel_(p.seatNumber)) + ' — ' + safe_(p.passengerName) + '</div>').join('')
       : safe_(b.passengerName || '') + ' — ' + safe_(b.seatNumber || '');
     return `
       <div class="ticket ticket-premium">
@@ -194,7 +195,7 @@
 
   function downloadTicket(b){
     const passengerHTML = Array.isArray(b.passengers)
-      ? b.passengers.map(p => '<div>' + safe_(p.seatNumber) + ' — ' + safe_(p.passengerName) + ' (' + safe_(p.sleeperType) + ')</div>').join('')
+      ? b.passengers.map(p => '<div>' + safe_(p.seatLabel || seatLabel_(p.seatNumber)) + ' — ' + safe_(p.passengerName) + '</div>').join('')
       : safe_(b.passengerName || '') + ' — ' + safe_(b.seatNumber || '');
     const html = `<!doctype html><html><head><meta charset="utf-8"><title>Ticket ${b.bookingId}</title>
       <style>
@@ -234,6 +235,13 @@
 
   function safe_(s){
     return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function seatLabel_(seatNumber){
+    const seat = String(seatNumber || '');
+    if (/^P\d+$/.test(seat)) return 'Passenger ' + seat.slice(1);
+    if (/^S\d+$/.test(seat)) return 'Seat ' + seat.slice(1);
+    return seat;
   }
 
   // Expose

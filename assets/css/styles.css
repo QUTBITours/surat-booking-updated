@@ -118,6 +118,15 @@ img{max-width:100%}
 /* Bus layout */
 .deck-switch{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .deck-switch .btn{flex:1 1 160px}
+.vehicle-map-title{width:100%;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:10px;background:#eef4fb;color:var(--navy)}
+.vehicle-map-title span{font-size:12px;color:var(--muted)}
+.passenger-count-card{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px;margin-bottom:16px;border:1px solid #bfdbfe;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#fff)}
+.passenger-count-card h3{margin:0 0 5px;color:var(--navy)}
+.passenger-count-card p{margin:0;color:var(--muted);font-size:13px}
+.passenger-count-control{min-width:180px}
+.passenger-count-control label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px}
+.passenger-count-control input{width:100%;padding:12px;border:1px solid #93c5fd;border-radius:10px;font:inherit;font-size:17px;font-weight:700;color:var(--navy)}
+@media(max-width:640px){.passenger-count-card{align-items:stretch;flex-direction:column}.passenger-count-control{min-width:0}}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;font-size:12px;color:#475569}
 .legend .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:#fff;border:1px solid var(--line)}
 .dot{width:10px;height:10px;border-radius:50%}
@@ -140,6 +149,10 @@ img{max-width:100%}
   /* Vertical sleeper bus: 3 berths across and 6 rows from front to back. */
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0;
 }
+.bus-grid.seater-50-grid{grid-template-columns:repeat(5,minmax(44px,1fr));gap:9px;align-items:center}
+.bus-grid.seater-50-grid::before{content:'AISLE';grid-column:3;grid-row:1/11;align-self:stretch;display:grid;place-items:center;writing-mode:vertical-rl;font-size:9px;letter-spacing:3px;color:#94a3b8;border-left:1px dashed #cbd5e1;border-right:1px dashed #cbd5e1}
+.seater-seat{aspect-ratio:1/1.05;min-height:48px;align-items:center;text-align:center;border-radius:10px;padding:5px;font-family:inherit}
+.seater-seat .no{font-size:14px}
 @media (max-width:860px){
   .bus-frame{max-width:100%}
 }
@@ -164,7 +177,7 @@ img{max-width:100%}
 .passenger-name-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media (max-width:640px){.passenger-name-grid{grid-template-columns:1fr}}
 .passenger-seat-field{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#f8fafc}
-.passenger-seat-field .seat-tag{min-width:46px;font-weight:800;color:var(--navy)}
+.passenger-seat-field .seat-tag{min-width:92px;font-weight:800;color:var(--navy)}
 .passenger-seat-field input{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff}
 .passenger-seat-field.invalid{border-color:var(--err);background:#fff7f7}
 
