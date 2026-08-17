@@ -22,6 +22,8 @@ A complete, mobile-friendly sleeper bus booking website with Google Sheets as th
 
 A seat is booked for a specific **route + travel date**. One booking may contain multiple seats, with one passenger name assigned to each seat.
 
+Every booking also records a required **vehicle / transport type** and the amount paid. Multi-passenger bookings are saved as one Sheet row per passenger, all linked by the same group booking ID.
+
 Routes:
 - **Nashik to Surat**
 - **Indore to Surat** — boarding Nagar must be Ammar Nagar, Nurai Nagar, or Saify Nagar.
@@ -41,11 +43,11 @@ The configured spreadsheet is already used by this project. The backend automati
 
 Run `setupSheets()` once from Apps Script if you want to create all four tabs immediately. Otherwise each tab is created automatically when that route is first used.
 
-Each route tab uses these headers in row 1 (columns A–Q):
+Each route tab uses these headers in row 1 (columns A–R):
 
-| A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Timestamp | Booking ID | Passenger Name | Mobile Number | Travel Date | Seat Number | Sleeper Type | Boarding Point | Dropping Point | Total Ticket Amount | Amount Paid | Remaining Amount | Payment Method | Payment Status | Booking Status | Notes | Booked By |
+| A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Timestamp | Booking ID | Passenger Name | Mobile Number | Travel Date | Seat Number | Sleeper Type | Boarding Point | Dropping Point | Total Ticket Amount | Amount Paid | Remaining Amount | Payment Method | Payment Status | Booking Status | Notes | Booked By | Vehicle Type |
 
 The old **Bookings** tab is kept as legacy data and is treated as Nashik to Surat so existing bookings are not lost.
 
