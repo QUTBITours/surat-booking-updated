@@ -251,13 +251,26 @@ table.data .row-cancelled{opacity:.55;text-decoration:line-through}
   .brand-name, .brand-sub{color:#0B2545 !important}
 }
 
-.ticket{
-  border:2px solid var(--navy);border-radius:14px;padding:18px;background:#fff;
-}
-.ticket-header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px dashed var(--navy);padding-bottom:10px;margin-bottom:12px}
-.ticket-header h3{margin:0;color:var(--navy)}
-.ticket-header .id{font-family:'JetBrains Mono',monospace;background:var(--navy);color:#fff;padding:4px 10px;border-radius:6px;font-size:13px}
-.ticket-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:14px}
+.ticket{border:1px solid #c8a33b;border-radius:18px;padding:0;background:#fff;overflow:hidden;box-shadow:0 16px 38px rgba(11,37,69,.14)}
+.ticket-header{display:flex;justify-content:space-between;align-items:center;gap:18px;background:linear-gradient(135deg,#071c36,#153d73);color:#fff;padding:22px 24px;margin:0}
+.ticket-header h3{margin:3px 0 2px;color:#fff;font-size:22px;letter-spacing:.2px}
+.ticket-eyebrow{font-size:10px;letter-spacing:2px;color:#f1c555;font-weight:800}
+.ticket-tagline{font-size:11px;color:#dbeafe}
+.ticket-id-wrap{text-align:right;min-width:150px}
+.ticket-id-wrap>span{display:block;font-size:9px;letter-spacing:1.5px;color:#bfdbfe;margin-bottom:5px}
+.ticket-header .id{font-family:'JetBrains Mono',monospace;background:linear-gradient(135deg,var(--gold),var(--gold-2));color:var(--navy);padding:7px 11px;border-radius:8px;font-size:12px;font-weight:800}
+.ticket-route{display:flex;justify-content:center;align-items:center;gap:18px;padding:16px 20px;background:#fffaf0;border-bottom:1px dashed #d4a93a;color:var(--navy);font-size:18px;font-weight:800;text-align:center}
+.ticket-route b{color:var(--gold);font-size:22px}
+.ticket-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;font-size:14px;padding:20px 24px}
+.ticket-grid>div{padding:10px 12px;background:#f8fafc;border-radius:10px;border:1px solid #eef2f7}
+.ticket-grid .k{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;margin-bottom:4px}
+.ticket-grid .v{color:var(--navy);font-weight:750;line-height:1.45}
+.ticket-money .v{font-size:18px}
+.ticket-money.paid{background:#f0fdf4;border-color:#bbf7d0}
+.ticket-money.paid .v{color:#15803d}
+.ticket-money.balance{background:#fff7ed;border-color:#fed7aa}
+.ticket-money.balance .v{color:#c2410c}
+@media(max-width:600px){.ticket-header{align-items:flex-start;flex-direction:column}.ticket-id-wrap{text-align:left}.ticket-grid{grid-template-columns:1fr;padding:16px}.ticket-route{font-size:15px}}
 @media (max-width:520px){.ticket-grid{grid-template-columns:1fr}}
 .ticket-grid .k{color:var(--muted);font-size:12px}
 .ticket-grid .v{font-weight:600}
