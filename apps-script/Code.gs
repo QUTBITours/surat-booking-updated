@@ -27,7 +27,8 @@ const VEHICLES = {
   '30-seater Bus': { capacity:30, mode:'bus', seatMap:false },
   '35-seater Bus': { capacity:35, mode:'bus', seatMap:false },
   '40-seater Bus': { capacity:40, mode:'bus', seatMap:false },
-  '45-seater Bus': { capacity:45, mode:'bus', seatMap:false }
+  '45-seater Bus': { capacity:45, mode:'bus', seatMap:false },
+  '36 Sleeper Bus': { capacity:36, mode:'sleeper', seatMap:true }
 };
 
 const HEADERS = [
@@ -354,8 +355,9 @@ function validateGroupBooking_(b) {
     const pax = b.passengers[i] || {};
     if (!pax.passengerName || String(pax.passengerName).trim().length < 2) return 'BAD_NAME';
     const seatNumber = String(pax.seatNumber || '');
-    if (vehicle.seatMap) {
-      if (!/^S(?:[1-9]|[1-4][0-9]|50)$/.test(seatNumber) || pax.sleeperType !== 'Seater') return 'BAD_SEAT';
+    if (vehicle.mode === 'sleeper') {
+      if (!/^[LU](?:[1-9]|1[0-8])$/.test(seatNumber)) return 'BAD_SEAT';
+      if ((seatNumber.charAt(0) === 'L' ? 'Lower' : 'Upper') !== pax.sleeperType) return 'BAD_SEAT';
     } else {
       const passengerMatch = /^P([1-9]|[1-4][0-9]|50)$/.exec(seatNumber);
       if (!passengerMatch || Number(passengerMatch[1]) > vehicle.capacity || pax.sleeperType !== 'Passenger') return 'BAD_SEAT';

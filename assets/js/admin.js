@@ -17,6 +17,16 @@
     $('btnRefresh').addEventListener('click', loadRows);
     $('btnClear').addEventListener('click', clearFilters);
     $('btnExport').addEventListener('click', exportCSV);
+    $('btnPrintVisible').addEventListener('click', printVisibleTickets);
+    document.querySelectorAll('#routeTabs button[data-route]').forEach(btn=>btn.addEventListener('click', ()=>{
+      $('fRoute').value = btn.dataset.route;
+      document.querySelectorAll('#routeTabs button[data-route]').forEach(tab=>{
+        const active = tab === btn;
+        tab.classList.toggle('btn-primary', active);
+        tab.classList.toggle('btn-outline', !active);
+      });
+      applyFilters();
+    }));
     ['fName','fMobile','fId','fDate','fRoute','fSeat','fSleeper','fPay','fStatus'].forEach(id=>{
       $(id).addEventListener('input', applyFilters);
       $(id).addEventListener('change', applyFilters);
@@ -90,6 +100,11 @@
     const sleep = $('fSleeper').value;
     const pay   = $('fPay').value;
     const stat  = $('fStatus').value;
+    document.querySelectorAll('#routeTabs button[data-route]').forEach(tab=>{
+      const active = tab.dataset.route === route;
+      tab.classList.toggle('btn-primary', active);
+      tab.classList.toggle('btn-outline', !active);
+    });
 
     state.filtered = state.rows.filter(r=>{
       if (name  && !(r.passengerName||'').toLowerCase().includes(name)) return false;
@@ -109,7 +124,7 @@
   function renderTable(){
     const tbody = $('tbody');
     if (state.filtered.length === 0){
-      tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:#6b7280;padding:26px">No bookings found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;color:#6b7280;padding:26px">No bookings found.</td></tr>';
       $('rowCount').textContent = '0 rows';
       return;
     }
@@ -213,7 +228,7 @@
         </div>
         <div class="field"><label>Vehicle / transport</label>
           <select id="e-vehicle">
-            ${['4-seater Sedan Car','6-seater Innova','RTA','7-seater Innova','10-seater Tempo Traveller','15-seater','20-seater','25-seater','50-seater'].map(v=>`<option${r.vehicleType===v?' selected':''}>${v}</option>`).join('')}
+            ${['4-seater Car','6-seater Car','7-seater Car','10-seater Bus','15-seater Bus','20-seater Bus','25-seater Bus','30-seater Bus','35-seater Bus','40-seater Bus','45-seater Bus','36 Sleeper Bus'].map(v=>`<option${r.vehicleType===v?' selected':''}>${v}</option>`).join('')}
           </select>
         </div>
         <div class="field"><label>Boarding</label><input id="e-board" value="${escapeAttr(r.boardingPoint)}"></div>
@@ -250,6 +265,21 @@
     $('btnDownload').addEventListener('click', ()=>QT.downloadTicket(r));
     if ($('btnCancel'))  $('btnCancel').addEventListener('click', ()=>cancelRow(r));
     if ($('btnRestore')) $('btnRestore').addEventListener('click', ()=>restoreRow(r));
+  }
+
+  function printVisibleTickets(){
+    if (!state.filtered.length) return QT.toast('No tickets to print for this route.','err');
+    const routeName = $('fRoute').selectedOptions[0].textContent;
+    const win = window.open('', '_blank', 'width=900,height=700');
+    if (!win) return QT.toast('Please allow the print window.','err');
+    const tickets = state.filtered.map(r => {
+      const ticket = Object.assign({}, r, {
+        passengers:[{ passengerName:r.passengerName, seatNumber:r.seatNumber, seatLabel:r.seatNumber }]
+      });
+      return '<section class="ticket-page">' + QT.ticketHTML(ticket) + '</section>';
+    }).join('');
+    win.document.write('<!doctype html><html><head><title>'+escapeHTML(routeName)+' tickets</title><style>body{font-family:Arial,sans-serif;margin:20px}.ticket-page{break-after:page;margin-bottom:28px}.ticket-page:last-child{break-after:auto}@media print{body{margin:0}}</style></head><body>'+tickets+'<script>window.onload=function(){window.print()}<\/script></body></html>');
+    win.document.close();
   }
 
   async function saveEdits(r){

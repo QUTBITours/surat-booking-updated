@@ -58,6 +58,13 @@
       <!-- Filters -->
       <div class="card">
         <h2 style="margin-bottom:10px">All Bookings</h2>
+        <div class="route-tabs" id="routeTabs" aria-label="Booking routes">
+          <button class="btn btn-primary" data-route="">All routes</button>
+          <button class="btn btn-outline" data-route="NASHIK_SURAT">Nashik → Surat</button>
+          <button class="btn btn-outline" data-route="SURAT_NASHIK">Surat → Nashik</button>
+          <button class="btn btn-outline" data-route="INDORE_SURAT">Indore → Surat</button>
+          <button class="btn btn-outline" data-route="SURAT_INDORE">Surat → Indore</button>
+        </div>
         <div class="filters">
           <input type="text" id="fName" placeholder="Passenger name…">
           <input type="text" id="fMobile" placeholder="Mobile number…">
@@ -88,6 +95,7 @@
           <button class="btn btn-ghost" id="btnClear">Clear filters</button>
           <button class="btn btn-outline" id="btnRefresh">↻ Refresh</button>
           <button class="btn btn-outline" id="btnExport">⬇️ Export CSV</button>
+          <button class="btn btn-outline" id="btnPrintVisible">🖨️ Print visible tickets</button>
           <a class="btn btn-gold" href="index.html">+ Add new booking</a>
         </div>
 

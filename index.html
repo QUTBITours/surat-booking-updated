@@ -84,6 +84,9 @@
               <option>40-seater Bus</option>
               <option>45-seater Bus</option>
             </optgroup>
+            <optgroup label="Select individual sleeper berths">
+              <option>36 Sleeper Bus</option>
+            </optgroup>
           </select>
           <div class="error">Choose a vehicle or transport type.</div>
         </div>
@@ -148,7 +151,8 @@
       </div>
 
       <div class="deck-switch" id="seatMapControls" style="display:none">
-        <div class="vehicle-map-title"><b>50-seat layout</b><span>Front of vehicle ↑</span></div>
+        <button type="button" class="btn btn-outline" id="btn-lower">Lower Sleeper (L1–L18)</button>
+        <button type="button" class="btn btn-outline" id="btn-upper">Upper Sleeper (U1–U18)</button>
       </div>
 
       <div class="legend" id="seatLegend" style="display:none">

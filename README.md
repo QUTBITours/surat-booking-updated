@@ -21,8 +21,10 @@ Every booking also records a required **vehicle / transport type** and the amoun
 Booking flow by vehicle:
 - **4-, 6- and 7-seater cars:** the complete car is booked to one required primary customer. Up to the car capacity can be added as optional printed passenger names.
 - **10-, 15-, 20-, 25-, 30-, 35-, 40- and 45-seater buses:** the complete bus is booked and the form requires exactly one name for every passenger position.
+- **36 Sleeper Bus:** available on all four routes with the original Lower L1–L18 and Upper U1–U18 berth selector. A berth is blocked only for the same route, date, and vehicle.
 - Every passenger is stored on a separate Excel/Google Sheets row under one group booking ID.
 - Availability and records are isolated by route, travel date, and vehicle type. Each route also has its own sheet tab.
+- The admin dashboard has one-click tabs for all four routes and can print every currently visible route ticket.
 
 Routes:
 - **Nashik to Surat**
