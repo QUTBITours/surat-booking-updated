@@ -77,7 +77,7 @@
         if (res.error === 'AUTH_REQUIRED'){ doLogout(); throw new Error('Session expired'); }
         throw new Error(QT.friendlyError(res.error));
       }
-      state.rows = res.rows || [];
+      state.rows = (res.rows || []).map(normalizeRoute);
       applyFilters();
       updateStats();
     } catch(err){
@@ -145,7 +145,7 @@
         <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${escapeHTML(r.bookingId)}</td>
         <td>${escapeHTML(r.passengerName)}</td>
         <td>${escapeHTML(r.mobile)}</td>
-        <td>${escapeHTML(r.routeLabel||'Nashik to Surat')}</td>
+        <td>${escapeHTML(r.routeLabel||'Route not recorded')}</td>
         <td>${QT.fmtDate(r.travelDate)}</td>
         <td>${escapeHTML(r.seatNumber)}</td>
         <td>${escapeHTML(r.sleeperType)}</td>
@@ -220,7 +220,7 @@
       <div class="form-grid" style="margin-top:10px">
         <div class="field"><label>Passenger name</label><input id="e-name" value="${escapeAttr(r.passengerName)}"></div>
         <div class="field"><label>Mobile</label><input id="e-mobile" maxlength="10" value="${escapeAttr(r.mobile)}"></div>
-        <div class="field"><label>Route</label><input value="${escapeAttr(r.routeLabel||'Nashik to Surat')}" readonly></div>
+        <div class="field"><label>Route</label><input value="${escapeAttr(r.routeLabel||'Route not recorded')}" readonly></div>
         <div class="field"><label>Travel date</label><input type="date" id="e-date" value="${r.travelDate||''}"></div>
         <div class="field"><label>Seat number</label><input id="e-seat" value="${escapeAttr(r.seatNumber)}"></div>
         <div class="field"><label>Sleeper type</label>
@@ -265,6 +265,21 @@
     $('btnDownload').addEventListener('click', ()=>QT.downloadTicket(r));
     if ($('btnCancel'))  $('btnCancel').addEventListener('click', ()=>cancelRow(r));
     if ($('btnRestore')) $('btnRestore').addEventListener('click', ()=>restoreRow(r));
+  }
+
+  function normalizeRoute(row){
+    const r = Object.assign({}, row);
+    const labels = {NASHIK_SURAT:'Nashik to Surat',INDORE_SURAT:'Indore to Surat',SURAT_NASHIK:'Surat to Nashik',SURAT_INDORE:'Surat to Indore'};
+    const board = String(r.boardingPoint || '').trim().toLowerCase();
+    const drop = String(r.droppingPoint || '').trim().toLowerCase();
+    if (!labels[r.route]) {
+      if (board === 'surat' && drop === 'nashik') r.route = 'SURAT_NASHIK';
+      else if (board === 'surat' && drop === 'indore') r.route = 'SURAT_INDORE';
+      else if (drop === 'surat' && ['ammar nagar','nurai nagar','sefi nagar','saify nagar','indore'].includes(board)) r.route = 'INDORE_SURAT';
+      else if (board === 'nashik' && drop === 'surat') r.route = 'NASHIK_SURAT';
+    }
+    r.routeLabel = labels[r.route] || r.routeLabel || 'Route not recorded';
+    return r;
   }
 
   function printVisibleTickets(){

@@ -99,6 +99,16 @@ function routeFromSheet_(sheetName) {
   return 'NASHIK_SURAT';
 }
 
+function routeFromPoints_(boardingPoint, droppingPoint) {
+  const board = String(boardingPoint || '').trim().toLowerCase();
+  const drop = String(droppingPoint || '').trim().toLowerCase();
+  if (board === 'surat' && drop === 'nashik') return 'SURAT_NASHIK';
+  if (board === 'surat' && drop === 'indore') return 'SURAT_INDORE';
+  if (drop === 'surat' && ['ammar nagar','nurai nagar','sefi nagar','saify nagar','indore'].indexOf(board) >= 0) return 'INDORE_SURAT';
+  if (board === 'nashik' && drop === 'surat') return 'NASHIK_SURAT';
+  return '';
+}
+
 function readSheet_(sh, route) {
   if (!sh || sh.getLastRow() < 2) return [];
   const last = sh.getLastRow();
@@ -111,12 +121,9 @@ function readAll_(route) {
   if (route) {
     if (!ROUTES[route]) return [];
     const rows = readSheet_(sheetForRoute_(route), route);
-    // Existing bookings from the old system are treated as Nashik → Surat.
-    if (route === 'NASHIK_SURAT') {
-      const legacy = ss.getSheetByName(LEGACY_SHEET_NAME);
-      if (legacy && legacy.getName() !== ROUTES.NASHIK_SURAT.sheet) {
-        return rows.concat(readSheet_(legacy, 'NASHIK_SURAT'));
-      }
+    const legacy = ss.getSheetByName(LEGACY_SHEET_NAME);
+    if (legacy && legacy.getName() !== ROUTES[route].sheet) {
+      return rows.concat(readSheet_(legacy, '').filter(r => r.route === route));
     }
     return rows;
   }
@@ -127,12 +134,12 @@ function readAll_(route) {
     if (sh) rows = rows.concat(readSheet_(sh, key));
   });
   const legacy = ss.getSheetByName(LEGACY_SHEET_NAME);
-  if (legacy) rows = rows.concat(readSheet_(legacy, 'NASHIK_SURAT'));
+  if (legacy) rows = rows.concat(readSheet_(legacy, ''));
   return rows;
 }
 
 function rowToObj_(row, rowNumber, sheetName, route) {
-  route = route || routeFromSheet_(sheetName);
+  route = route || routeFromPoints_(row[7], row[8]) || routeFromSheet_(sheetName);
   return {
     _row: rowNumber,
     _sheetName: sheetName,
