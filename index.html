@@ -55,7 +55,7 @@
             <option value="">Select Nagar</option>
             <option>Ammar Nagar</option>
             <option>Nurai Nagar</option>
-            <option>Saify Nagar</option>
+            <option>Sefi Nagar</option>
           </select>
           <div class="error">Choose the boarding Nagar.</div>
         </div>
@@ -69,15 +69,21 @@
           <label>Vehicle / transport type<span class="req">*</span></label>
           <select id="vehicleType">
             <option value="">Select vehicle</option>
-            <option>4-seater Sedan Car</option>
-            <option>6-seater Innova</option>
-            <option>RTA</option>
-            <option>7-seater Innova</option>
-            <option>10-seater Tempo Traveller</option>
-            <option>15-seater</option>
-            <option>20-seater</option>
-            <option>25-seater</option>
-            <option>50-seater</option>
+            <optgroup label="Book the complete car">
+              <option>4-seater Car</option>
+              <option>6-seater Car</option>
+              <option>7-seater Car</option>
+            </optgroup>
+            <optgroup label="Book the complete bus">
+              <option>10-seater Bus</option>
+              <option>15-seater Bus</option>
+              <option>20-seater Bus</option>
+              <option>25-seater Bus</option>
+              <option>30-seater Bus</option>
+              <option>35-seater Bus</option>
+              <option>40-seater Bus</option>
+              <option>45-seater Bus</option>
+            </optgroup>
           </select>
           <div class="error">Choose a vehicle or transport type.</div>
         </div>
@@ -132,8 +138,8 @@
 
       <div id="passengerCountCard" class="passenger-count-card" style="display:none">
         <div>
-          <h3>How many passengers?</h3>
-          <p>Maximum capacity for this vehicle: <b><span id="passengerCapacity">1</span> passengers</b></p>
+          <h3 id="passengerCountTitle">How many passenger names?</h3>
+          <p id="passengerCountHelp">Vehicle capacity: <b><span id="passengerCapacity">1</span> passengers</b></p>
         </div>
         <div class="passenger-count-control">
           <label for="passengerCount">Passenger count</label>

@@ -14,24 +14,19 @@ A complete, mobile-friendly sleeper bus booking website with Google Sheets as th
 - `apps-script/Code.gs` — Google Apps Script backend (paste into Apps Script editor)
 - `apps-script/appsscript.json` — Apps Script manifest
 
-## Bus layout
-
-- 36 sleeper berths total
-- **Lower deck:** L1–L18 (6 rows × 2+1 configuration)
-- **Upper deck:** U1–U18 (6 rows × 2+1 configuration)
-
-A seat is booked for a specific **route + travel date**. One booking may contain multiple seats, with one passenger name assigned to each seat.
+## Vehicle booking rules
 
 Every booking also records a required **vehicle / transport type** and the amount paid. Multi-passenger bookings are saved as one Sheet row per passenger, all linked by the same group booking ID.
 
 Booking flow by vehicle:
-- 4, 6, 7, 10, 15, 20 and 25 seat vehicles ask for passenger count and then show exactly that many passenger-name fields.
-- RTA uses the passenger-count flow with a maximum of 50 passengers.
-- The 50-seater uses an interactive 50-seat map; each selected seat is assigned to one named passenger and printed on the ticket.
+- **4-, 6- and 7-seater cars:** the complete car is booked to one required primary customer. Up to the car capacity can be added as optional printed passenger names.
+- **10-, 15-, 20-, 25-, 30-, 35-, 40- and 45-seater buses:** the complete bus is booked and the form requires exactly one name for every passenger position.
+- Every passenger is stored on a separate Excel/Google Sheets row under one group booking ID.
+- Availability and records are isolated by route, travel date, and vehicle type. Each route also has its own sheet tab.
 
 Routes:
 - **Nashik to Surat**
-- **Indore to Surat** — boarding Nagar must be Ammar Nagar, Nurai Nagar, or Saify Nagar.
+- **Indore to Surat** — boarding Nagar must be Ammar Nagar, Nurai Nagar, or Sefi Nagar.
 - **Surat to Nashik**
 - **Surat to Indore**
 

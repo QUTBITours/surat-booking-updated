@@ -17,15 +17,17 @@ const ROUTES = {
 };
 const INDORE_NAGARS = ['Ammar Nagar','Nurai Nagar','Sefi Nagar'];
 const VEHICLES = {
-  '4-seater Sedan Car': { capacity:4, seatMap:false },
-  '6-seater Innova': { capacity:6, seatMap:false },
-  'RTA': { capacity:50, seatMap:false },
-  '7-seater Innova': { capacity:7, seatMap:false },
-  '10-seater Tempo Traveller': { capacity:10, seatMap:false },
-  '15-seater': { capacity:15, seatMap:false },
-  '20-seater': { capacity:20, seatMap:false },
-  '25-seater': { capacity:25, seatMap:false },
-  '50-seater': { capacity:50, seatMap:true }
+  '4-seater Car': { capacity:4, mode:'car', seatMap:false },
+  '6-seater Car': { capacity:6, mode:'car', seatMap:false },
+  '7-seater Car': { capacity:7, mode:'car', seatMap:false },
+  '10-seater Bus': { capacity:10, mode:'bus', seatMap:false },
+  '15-seater Bus': { capacity:15, mode:'bus', seatMap:false },
+  '20-seater Bus': { capacity:20, mode:'bus', seatMap:false },
+  '25-seater Bus': { capacity:25, mode:'bus', seatMap:false },
+  '30-seater Bus': { capacity:30, mode:'bus', seatMap:false },
+  '35-seater Bus': { capacity:35, mode:'bus', seatMap:false },
+  '40-seater Bus': { capacity:40, mode:'bus', seatMap:false },
+  '45-seater Bus': { capacity:45, mode:'bus', seatMap:false }
 };
 
 const HEADERS = [
@@ -339,6 +341,7 @@ function validateGroupBooking_(b) {
   const vehicle = VEHICLES[String(b.vehicleType || '')];
   if (!vehicle) return 'BAD_VEHICLE';
   if (b.passengers.length > vehicle.capacity) return 'TOO_MANY_PASSENGERS';
+  if (vehicle.mode === 'bus' && b.passengers.length !== vehicle.capacity) return 'BAD_SEAT';
   const cfg = ROUTES[String(b.route)];
   if (String(b.route) === 'INDORE_SURAT') {
     if (INDORE_NAGARS.indexOf(String(b.boardingPoint || '')) < 0) return 'BAD_BOARDING';
