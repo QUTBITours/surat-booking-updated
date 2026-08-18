@@ -275,8 +275,8 @@
     if (!labels[r.route]) {
       if (board === 'surat' && drop === 'nashik') r.route = 'SURAT_NASHIK';
       else if (board === 'surat' && drop === 'indore') r.route = 'SURAT_INDORE';
-      else if (drop === 'surat' && ['ammar nagar','nurai nagar','sefi nagar','saify nagar','indore'].includes(board)) r.route = 'INDORE_SURAT';
       else if (board === 'nashik' && drop === 'surat') r.route = 'NASHIK_SURAT';
+      else if (drop === 'surat' && board) r.route = 'INDORE_SURAT';
     }
     r.routeLabel = labels[r.route] || r.routeLabel || 'Route not recorded';
     return r;

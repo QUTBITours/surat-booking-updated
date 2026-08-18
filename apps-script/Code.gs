@@ -104,8 +104,8 @@ function routeFromPoints_(boardingPoint, droppingPoint) {
   const drop = String(droppingPoint || '').trim().toLowerCase();
   if (board === 'surat' && drop === 'nashik') return 'SURAT_NASHIK';
   if (board === 'surat' && drop === 'indore') return 'SURAT_INDORE';
-  if (drop === 'surat' && ['ammar nagar','nurai nagar','sefi nagar','saify nagar','indore'].indexOf(board) >= 0) return 'INDORE_SURAT';
   if (board === 'nashik' && drop === 'surat') return 'NASHIK_SURAT';
+  if (drop === 'surat' && board) return 'INDORE_SURAT';
   return '';
 }
 
