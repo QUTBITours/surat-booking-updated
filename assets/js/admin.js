@@ -18,6 +18,12 @@
     $('btnClear').addEventListener('click', clearFilters);
     $('btnExport').addEventListener('click', exportCSV);
     $('btnPrintVisible').addEventListener('click', printVisibleTickets);
+    $('occRoute').addEventListener('change', ()=>{ setLatestToolDate('occDate',$('occRoute').value,'36 Sleeper Bus'); renderOccupancy(); });
+    $('occDate').addEventListener('change', renderOccupancy);
+    $('chartRoute').addEventListener('change', ()=>{ setLatestToolDate('chartDate',$('chartRoute').value,''); renderPassengerChart(); });
+    $('chartDate').addEventListener('change', renderPassengerChart);
+    $('chartVehicle').addEventListener('change', renderPassengerChart);
+    $('btnPrintChart').addEventListener('click', printPassengerChart);
     document.querySelectorAll('#routeTabs button[data-route]').forEach(btn=>btn.addEventListener('click', ()=>{
       $('fRoute').value = btn.dataset.route;
       document.querySelectorAll('#routeTabs button[data-route]').forEach(tab=>{
@@ -80,6 +86,7 @@
       state.rows = (res.rows || []).map(normalizeRoute);
       applyFilters();
       updateStats();
+      refreshAdminTools();
     } catch(err){
       QT.toast(err.message||'Failed to load', 'err');
     } finally { QT.overlay(false); }
@@ -279,7 +286,65 @@
       else if (drop === 'surat' && board) r.route = 'INDORE_SURAT';
     }
     r.routeLabel = labels[r.route] || r.routeLabel || 'Route not recorded';
+    if (!r.vehicleType && /^[LU](?:[1-9]|1[0-8])$/.test(String(r.seatNumber||''))) r.vehicleType = '36 Sleeper Bus';
     return r;
+  }
+
+  function confirmedRows(){ return state.rows.filter(r=>r.bookingStatus !== 'Cancelled'); }
+
+  function refreshAdminTools(){
+    if (!$('occDate').value) setLatestToolDate('occDate',$('occRoute').value,'36 Sleeper Bus');
+    if (!$('chartDate').value) setLatestToolDate('chartDate',$('chartRoute').value,'');
+    renderOccupancy();
+    renderPassengerChart();
+  }
+
+  function setLatestToolDate(inputId, route, vehicle){
+    const dates = confirmedRows().filter(r=>r.route===route && (!vehicle || r.vehicleType===vehicle)).map(r=>r.travelDate).filter(Boolean).sort();
+    $(inputId).value = dates.length ? dates[dates.length-1] : QT.todayISO();
+  }
+
+  function sleeperSeatList(){
+    return ['L','U'].flatMap(prefix=>Array.from({length:18},(_,i)=>prefix+(i+1)));
+  }
+
+  function seatSort(a,b){
+    const ap=String(a.seatNumber||''), bp=String(b.seatNumber||'');
+    const order={L:0,U:1,P:2};
+    return (order[ap.charAt(0)]??9)-(order[bp.charAt(0)]??9) || Number(ap.slice(1)||0)-Number(bp.slice(1)||0) || String(a.passengerName||'').localeCompare(String(b.passengerName||''));
+  }
+
+  function renderOccupancy(){
+    const route=$('occRoute').value, date=$('occDate').value;
+    const rows=confirmedRows().filter(r=>r.route===route && r.travelDate===date && r.vehicleType==='36 Sleeper Bus');
+    const occupied=[...new Set(rows.map(r=>String(r.seatNumber||'').toUpperCase()).filter(s=>/^[LU](?:[1-9]|1[0-8])$/.test(s)))].sort((a,b)=>seatSort({seatNumber:a},{seatNumber:b}));
+    const occupiedSet=new Set(occupied), available=sleeperSeatList().filter(s=>!occupiedSet.has(s));
+    const booked=occupied.length, free=36-booked, occupiedPct=Math.round(booked/36*100), availablePct=100-occupiedPct;
+    $('occBooked').textContent=String(booked);$('occAvailable').textContent=String(free);$('occPercent').textContent=occupiedPct+'%';$('occAvailablePercent').textContent=availablePct+'%';$('occBar').style.width=occupiedPct+'%';
+    $('occupiedBerths').textContent=occupied.length?occupied.join(', '):'None';$('availableBerths').textContent=date?(available.length?available.join(', '):'Bus is full'):'Select a travel date';
+  }
+
+  function chartRows(){
+    const route=$('chartRoute').value,date=$('chartDate').value,vehicle=$('chartVehicle').value;
+    return confirmedRows().filter(r=>r.route===route && (!date||r.travelDate===date) && (!vehicle?String(r.vehicleType||'').includes('Bus'):r.vehicleType===vehicle)).sort(seatSort);
+  }
+
+  function renderPassengerChart(){
+    const rows=chartRows(), routeText=$('chartRoute').selectedOptions[0].textContent, date=$('chartDate').value;
+    $('chartTitle').textContent=routeText+(date?' — '+QT.fmtDate(date):'');
+    $('chartBody').innerHTML=rows.length?rows.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHTML(r.passengerName)}</td><td><b>${escapeHTML(r.seatNumber||'—')}</b></td><td>${escapeHTML(r.vehicleType||'—')}</td><td>${escapeHTML(r.mobile||'—')}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#6b7280;padding:20px">No confirmed passengers for this selection.</td></tr>';
+    $('chartCount').textContent=rows.length+' passenger'+(rows.length===1?'':'s');
+  }
+
+  function printPassengerChart(){
+    const rows=chartRows();
+    if(!rows.length)return QT.toast('No passengers to print for this selection.','err');
+    const title=$('chartTitle').textContent;
+    const win=window.open('','_blank','width=900,height=700');
+    if(!win)return QT.toast('Please allow the print window.','err');
+    const body=rows.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHTML(r.passengerName)}</td><td>${escapeHTML(r.seatNumber||'—')}</td><td>${escapeHTML(r.vehicleType||'—')}</td><td>${escapeHTML(r.mobile||'—')}</td></tr>`).join('');
+    win.document.write(`<!doctype html><html><head><title>${escapeHTML(title)}</title><style>body{font-family:Arial;color:#0b2545;margin:28px}h1{font-size:24px}p{color:#64748b}table{width:100%;border-collapse:collapse}th,td{border:1px solid #cbd5e1;padding:9px;text-align:left}th{background:#0b2545;color:white}.foot{margin-top:14px;font-weight:bold}@media print{body{margin:12mm}}</style></head><body><h1>Qutbi Tours &amp; Holidays</h1><h2>${escapeHTML(title)}</h2><p>Confirmed passenger chart</p><table><thead><tr><th>#</th><th>Passenger</th><th>Seat</th><th>Vehicle</th><th>Mobile</th></tr></thead><tbody>${body}</tbody></table><div class="foot">Total passengers: ${rows.length}</div><script>window.onload=function(){window.print()}<\/script></body></html>`);
+    win.document.close();
   }
 
   function printVisibleTickets(){

@@ -55,6 +55,59 @@
         <div class="stat"><div class="lbl">Cancelled</div><div class="val" id="s-cancelled">0</div><div class="sub">Not deleted, status only</div></div>
       </div>
 
+      <div class="admin-tools-grid">
+        <div class="card occupancy-card">
+          <h2>36 Sleeper Bus Occupancy</h2>
+          <div class="subtitle">Choose one route and travel date to see the exact berth position.</div>
+          <div class="tool-filters">
+            <select id="occRoute">
+              <option value="NASHIK_SURAT">Nashik to Surat</option>
+              <option value="SURAT_NASHIK">Surat to Nashik</option>
+              <option value="INDORE_SURAT">Indore to Surat</option>
+              <option value="SURAT_INDORE">Surat to Indore</option>
+            </select>
+            <input type="date" id="occDate" title="Travel date">
+          </div>
+          <div class="occupancy-metrics">
+            <div><span id="occBooked">0</span><small>Occupied</small></div>
+            <div><span id="occAvailable">36</span><small>Available</small></div>
+            <div><span id="occPercent">0%</span><small>Occupied</small></div>
+            <div><span id="occAvailablePercent">100%</span><small>Available</small></div>
+          </div>
+          <div class="occupancy-bar"><span id="occBar"></span></div>
+          <div class="berth-list"><b>Occupied berths</b><div id="occupiedBerths">None</div></div>
+          <div class="berth-list available"><b>Available berths</b><div id="availableBerths">Select a travel date</div></div>
+        </div>
+
+        <div class="card passenger-chart-card">
+          <h2>Passenger Chart</h2>
+          <div class="subtitle">Passenger and seat chart for a selected route, date, and bus.</div>
+          <div class="tool-filters chart-filters">
+            <select id="chartRoute">
+              <option value="NASHIK_SURAT">Nashik to Surat</option>
+              <option value="SURAT_NASHIK">Surat to Nashik</option>
+              <option value="INDORE_SURAT">Indore to Surat</option>
+              <option value="SURAT_INDORE">Surat to Indore</option>
+            </select>
+            <input type="date" id="chartDate" title="Travel date">
+            <select id="chartVehicle">
+              <option value="">All buses</option>
+              <option>36 Sleeper Bus</option><option>10-seater Bus</option><option>15-seater Bus</option>
+              <option>20-seater Bus</option><option>25-seater Bus</option><option>30-seater Bus</option>
+              <option>35-seater Bus</option><option>40-seater Bus</option><option>45-seater Bus</option>
+            </select>
+          </div>
+          <div class="chart-heading-row"><b id="chartTitle">Passenger chart</b><button class="btn btn-gold" id="btnPrintChart">🖨️ Print chart</button></div>
+          <div class="table-wrap chart-table-wrap">
+            <table class="data passenger-chart-table">
+              <thead><tr><th>#</th><th>Passenger</th><th>Seat</th><th>Vehicle</th><th>Mobile</th></tr></thead>
+              <tbody id="chartBody"><tr><td colspan="5">No confirmed passengers</td></tr></tbody>
+            </table>
+          </div>
+          <div id="chartCount" class="chart-count">0 passengers</div>
+        </div>
+      </div>
+
       <!-- Filters -->
       <div class="card">
         <h2 style="margin-bottom:10px">All Bookings</h2>
@@ -138,8 +191,8 @@
     </div>
   </div>
 
-  <script src="assets/js/config.js?v=20260818-2"></script>
-  <script src="assets/js/common.js?v=20260818-2"></script>
-  <script src="assets/js/admin.js?v=20260818-2"></script>
+  <script src="assets/js/config.js?v=20260819-1"></script>
+  <script src="assets/js/common.js?v=20260819-1"></script>
+  <script src="assets/js/admin.js?v=20260819-1"></script>
 </body>
 </html>
